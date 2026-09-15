@@ -1,0 +1,6 @@
+# Sanitized defaults for the systemd example.
+# Do not put credentials, private hostnames, private IP addresses, or absolute private paths here.
+
+KV_BUDGET_GB=2
+OFFLOAD_STAGING_BUDGET_GB=80
+MAX_NUM_BATCHED_TOKENS=4096

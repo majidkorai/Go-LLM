@@ -1,0 +1,15 @@
+# Sanitized systemd example.
+# Install paths are intentionally generic. Adjust to your host and review before enabling.
+
+[Unit]
+Description=Go-LLM Qwen Flash-Next vLLM service
+After=network-online.target
+
+[Service]
+EnvironmentFile=/etc/default/vllm-qwen
+ExecStart=/usr/bin/env bash /opt/go-llm/scripts/serve-qwen-flash-next.sh
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
