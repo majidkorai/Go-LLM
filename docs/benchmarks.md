@@ -8,7 +8,7 @@ Recommended stable local config.
 
 | Context | Direction | Measured value | Notes |
 |---:|---|---:|---|
-| 1k | decode | ~36.5 tok/s | Tuned local path. |
+| 1k | decode | >40 tok/s | Tuned short-context decode. |
 | 32k | decode | ~31 tok/s | Coherent long-context behavior. |
 | 126k | decode | ~19 tok/s | Useful but slow; long context costs GPU attention and hybrid indexer work. |
 | 32k | prefill | ~1104 tok/s | Fresh prefill, no warm cache assumed. |
