@@ -46,10 +46,11 @@ These are observed on the documented local dual RTX 3090 `sm_86` path. They are 
 
 | Context | Direction | Observed value | Notes |
 |---:|---|---:|---|
-| 1k | decode | >40 tok/s | Tuned short-context decode. |
-| 32k | decode | ~31 tok/s | Coherent long-context behavior. |
-| 126k | decode | ~19 tok/s | Useful but slow; long context costs GPU attention and hybrid indexer work. |
-| 32k | prefill | ~1104 tok/s | Fresh prefill, no warm cache assumed. |
+| 1k | decode | >40 tok/s | Reported consistent with 32k and 128k. |
+| 32k | decode | >40 tok/s | Reported consistent with 1k and 128k. |
+| 128k | decode | >40 tok/s | Reported stable enough to treat as the expected local long-context range. |
+| 32k | prefill | ~1104 tok/s | Fresh prefill was the slower side. |
+| long context | TTFS | ~2 min | Reported time-to-first-token/stream for long-context runs. |
 
 ### Q4_K_XL experimental only
 

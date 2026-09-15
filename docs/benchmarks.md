@@ -8,10 +8,11 @@ Recommended stable local config.
 
 | Context | Direction | Measured value | Notes |
 |---:|---|---:|---|
-| 1k | decode | >40 tok/s | Tuned short-context decode. |
-| 32k | decode | ~31 tok/s | Coherent long-context behavior. |
-| 126k | decode | ~19 tok/s | Useful but slow; long context costs GPU attention and hybrid indexer work. |
-| 32k | prefill | ~1104 tok/s | Fresh prefill, no warm cache assumed. |
+| 1k | decode | >40 tok/s | Reported consistent across 1k, 32k, and 128k. |
+| 32k | decode | >40 tok/s | Reported consistent across 1k, 32k, and 128k. |
+| 128k | decode | >40 tok/s | Reported consistent across 1k, 32k, and 128k. |
+| 32k | prefill | ~1104 tok/s | Fresh prefill remained slower than decode. |
+| long context | TTFS | ~2 min | Reported time-to-first-token/stream for long-context runs. |
 
 ## Q4_K_XL
 
@@ -37,8 +38,8 @@ was later determined not to be reproducible under the documented model/config. D
 
 The plausible local ceiling is closer to the fresh long-context prefill numbers above, not the historical figure.
 
-## Why long context degrades
+## Where the time goes
 
-Long-context decode slows because GPU-side attention and hybrid indexer style segments grow with context length. The degradation was measured across 1k, 32k, and 126k prompts.
+Long-context runs were reported with TTFS around 2 min. Decode, once streaming, was reported above 40 tok/s across 1k, 32k, and 128k. The prefill and first-token path is therefore the practical bottleneck in these notes.
 
-This is context-length cost, not a simple time-based decay.
+The previous long-context degradation note was stale for IQ4_XS and should not be treated as the expected behavior for the corrected runs.
