@@ -24,11 +24,15 @@ The local sm_86 path can work, but it is not the clean official Blackwell recipe
 
 ## Recommended local model choice
 
-For the local dual RTX 3090 path, the only coherent long-context configuration in the documented notes is IQ4_XS.
+For the local dual RTX 3090 path, choose by workload:
 
-Use IQ4_XS when stability and long context matter.
+| Goal | Best local model | Why |
+|---:|---|---|
+| Streaming decode speed | IQ4_XS | ~27% faster decode in the head-to-head |
+| Fast prefill / time-to-first-token | Q4_K_XL | ~2.5x faster prefill in the head-to-head |
+| Coherent 128K operation | Both, with best config | Both reported OK at 128K coherence |
 
-Use Q4_K_XL only experimentally; the documented notes report long-context degradation and crashes after large staged/offloaded allocations.
+Keep the historical Q4_K_XL instability reports as a caveat: the latest head-to-head used the best config for each model.
 
 ## Quick orientation
 
@@ -42,25 +46,20 @@ Use Q4_K_XL only experimentally; the documented notes report long-context degrad
 
 These are observed on the documented local dual RTX 3090 `sm_86` path. They are not official Blackwell numbers and not guarantees across drivers, GPUs, vLLM revisions, patch sets, or system memory layouts.
 
-### IQ4_XS recommended stable local config
+### Head-to-head (best config for each)
 
-| Context | Direction | Observed value | Notes |
-|---:|---|---:|---|
-| 1k | decode | >40 tok/s | Reported consistent with 32k and 128k. |
-| 32k | decode | >40 tok/s | Reported consistent with 1k and 128k. |
-| 128k | decode | >40 tok/s | Reported stable enough to treat as the expected local long-context range. |
-| 32k | prefill | ~1104 tok/s | Fresh prefill was the slower side. |
-| long context | TTFS | ~2 min | Reported time-to-first-token/stream for long-context runs. |
+| Metric | Q4_K_XL | IQ4_XS |
+|---:|---:|---:|
+| Decode @8k | 32.4 tok/s | 40.6 tok/s |
+| Decode @32k | 29.6-31.0 tok/s | 40.5 tok/s |
+| Decode @128k | 30.3 tok/s | 40.9 tok/s |
+| Prefill @8k | 854-911 tok/s | 307 tok/s |
+| Prefill @32k | 869-1007 tok/s | 350 tok/s |
+| 128K coherence | ok (M=122827) | ok (M=120884) |
 
-### Q4_K_XL experimental only
+Result: IQ4_XS is about 27% faster on decode, but about 2.5x slower on prefill. For long-context runs, TTFS was around 2 minutes, with prefill as the slow side for IQ4_XS.
 
-| Context | Direction | Observed value | Notes |
-|---:|---|---:|---|
-| 1k | decode | ~32.3 tok/s | Short-context decode was close enough to be tempting. |
-| 8k | prefill | ~854 tok/s | Short prefill was acceptable. |
-| long context | decode or prefill | unstable | Crashes or degradation were reported after large staged/offloaded allocations. |
-
-Do not use Q4_K_XL as the default for long context on this local path.
+Use IQ4_XS for decode-bound or long streamed answers. Use Q4_K_XL when prefill or time-to-first-token dominates the workload.
 
 ### Historical caveat
 
