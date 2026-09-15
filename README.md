@@ -38,6 +38,33 @@ Use Q4_K_XL only experimentally; the documented notes report long-context degrad
 4. Compare against docs/benchmarks.md.
 5. If a run fails, check docs/troubleshooting.md.
 
+## Benchmarks (local observations)
+
+These are observed on the documented local dual RTX 3090 `sm_86` path. They are not official Blackwell numbers and not guarantees across drivers, GPUs, vLLM revisions, patch sets, or system memory layouts.
+
+### IQ4_XS recommended stable local config
+
+| Context | Direction | Observed value | Notes |
+|---:|---|---:|---|
+| 1k | decode | ~36.5 tok/s | Tuned local path. |
+| 32k | decode | ~31 tok/s | Coherent long-context behavior. |
+| 126k | decode | ~19 tok/s | Useful but slow; long context costs GPU attention and hybrid indexer work. |
+| 32k | prefill | ~1104 tok/s | Fresh prefill, no warm cache assumed. |
+
+### Q4_K_XL experimental only
+
+| Context | Direction | Observed value | Notes |
+|---:|---|---:|---|
+| 1k | decode | ~32.3 tok/s | Short-context decode was close enough to be tempting. |
+| 8k | prefill | ~854 tok/s | Short prefill was acceptable. |
+| long context | decode or prefill | unstable | Crashes or degradation were reported after large staged/offloaded allocations. |
+
+Do not use Q4_K_XL as the default for long context on this local path.
+
+### Historical caveat
+
+The older `~6665 tok/s` prefill baseline was later determined not to be reproducible under the documented model/config. Do not use it as an expectation.
+
 ## What is intentionally out of scope
 
 - Model weights.
